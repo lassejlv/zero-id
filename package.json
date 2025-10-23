@@ -1,6 +1,6 @@
 {
   "name": "zero-id",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "A clean and efficient unique identifier",
   "type": "module",
   "license": "MIT",
