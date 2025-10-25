@@ -61,10 +61,10 @@ function randomBase62(length: number): string {
 /**
  * Generates a new zeroId
  */
-export function zeroId(): string {
+export function zeroId(randomPartLength: number = 7): string {
   const timestamp = Date.now()
   const timestampPart = encodeBase62(timestamp, 9)
-  const randomPart = randomBase62(7)
+  const randomPart = randomBase62(randomPartLength)
 
   return timestampPart + randomPart
 }
@@ -76,7 +76,8 @@ export function decodeZeroId(id: string): {
   timestamp: number
   createdAt: Date
 } | null {
-  if (id.length !== 16 || !/^[0-9A-Za-z]+$/.test(id)) {
+  // Minimum length is 10 (9 for timestamp + at least 1 for random part)
+  if (id.length < 10 || !/^[0-9A-Za-z]+$/.test(id)) {
     return null
   }
 
