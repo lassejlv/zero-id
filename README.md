@@ -1,14 +1,6 @@
 # Zero ID
 
-A clean and efficient unique identifier for JavaScript and TypeScript.
-
-## Features
-
-- **Ultra compact** - Only 16 characters
-- **Time-sortable** - IDs can be sorted chronologically
-- **High entropy** - 7 random characters for uniqueness
-- **URL-safe** - Base62 encoding (alphanumeric only)
-- **No dependencies** - Pure JavaScript with Web Crypto API
+A compact, time-sortable unique identifier for JavaScript and TypeScript.
 
 ## Installation
 
@@ -16,104 +8,55 @@ A clean and efficient unique identifier for JavaScript and TypeScript.
 npm install zero-id
 ```
 
-```bash
-bun add zero-id
-```
-
 ## Usage
 
-### Generate an ID
-
 ```typescript
-import { zeroId } from 'zero-id'
+import { zeroId, decodeZeroId, isValidZeroId, compareZeroIds } from 'zero-id'
 
+// Basic
 const id = zeroId()
 // => "4kN7pQ2xR8mB5vLw"
-```
 
-### Decode an ID
+// With prefix
+const userId = zeroId({ prefix: "user_" })
+// => "user_4kN7pQ2xR8mB5vLw"
 
-Extract the timestamp from a zeroId:
+// With metadata
+const orderId = zeroId({ 
+  prefix: "order_",
+  metadata: { amount: 99.99, currency: "USD" }
+})
 
-```typescript
-import { decodeZeroId } from 'zero-id'
+// Decode
+const decoded = decodeZeroId(orderId, "order_")
+// => { timestamp: 1634567890123, createdAt: Date(...), metadata: { amount: 99.99, currency: "USD" } }
 
-const decoded = decodeZeroId('4kN7pQ2xR8mB5vLw')
-// => { timestamp: 1634567890123, createdAt: Date(...) }
-```
+// Validate
+isValidZeroId(id) // => true
+isValidZeroId(userId, "user_") // => true
 
-### Validate an ID
-
-```typescript
-import { isValidZeroId } from 'zero-id'
-
-isValidZeroId('4kN7pQ2xR8mB5vLw') // => true
-isValidZeroId('invalid-id') // => false
-```
-
-### Compare IDs
-
-Sort IDs chronologically:
-
-```typescript
-import { compareZeroIds } from 'zero-id'
-
-const ids = ['4kN7pQ2xR8mB5vLw', '4kN7pQ2xR8mB5vLx']
+// Compare (for sorting)
 ids.sort(compareZeroIds)
 ```
 
-## API
+## Options
 
-### `zeroId()`
-
-Generates a new zeroId.
-
-**Returns:** `string` - A 16-character unique identifier
-
-### `decodeZeroId(id: string)`
-
-Decodes a zeroId to extract its timestamp.
-
-**Parameters:**
-
-- `id` - The zeroId to decode
-
-**Returns:** `{ timestamp: number, createdAt: Date } | null`
-
-### `isValidZeroId(id: string)`
-
-Validates a zeroId format.
-
-**Parameters:**
-
-- `id` - The string to validate
-
-**Returns:** `boolean`
-
-### `compareZeroIds(a: string, b: string)`
-
-Compares two zeroIds chronologically.
-
-**Parameters:**
-
-- `a` - First zeroId
-- `b` - Second zeroId
-
-**Returns:** `number` - `-1` if a < b, `1` if a > b, `0` if equal
-
-**Throws:** Error if either ID is invalid
+```typescript
+zeroId({
+  prefix: "user_",      // Optional prefix
+  randomLength: 7,      // Random part length (default: 7)
+  metadata: { ... }     // Optional metadata object
+})
+```
 
 ## Format
 
-Each zeroId consists of:
+- **9 characters** - Timestamp (base62 encoded)
+- **Variable** - Metadata (if provided)
+- **7 characters** - Random data (configurable)
 
-- **9 characters** - Timestamp encoded in base62
-- **7 characters** - Random data for uniqueness
-
-Total: **16 characters** of base62 (0-9, A-Z, a-z)
-
-Example: `4kN7pQ2xR8mB5vLw`
+Base62 encoding (0-9, A-Z, a-z) - URL-safe, no special characters.
 
 ## License
 
-MIT © [Lasse Vestergaard](https://github.com/lassejlv)
+MIT
